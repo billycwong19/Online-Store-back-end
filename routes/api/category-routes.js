@@ -19,38 +19,48 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const category = await Category.findByPk(req.params.num, {
+    const category = await Category.findByPk(req.params.id, {
       include: [{ model: Product}]
     })
     res.status(200).json(category)
-    return category
   } catch {
-    res.status(500).json(err);
+    res.status(400).json(err);
     }
   // find one category by its `id` value
   // be sure to include its associated Products
 });
 
+
 router.post('/', async (req, res) => {
-  // create a new category
   try {
-    const newCategory = Category.create(req.body)
-    res.status(200).json({newCategory})
-  } catch {
+    const newCategory = await Category.create({
+      category_name: req.body.category_name,
+    });
+    res.status(200).json(newCategory);
+  } catch (err) {
     res.status(400).json(err);
-    }
+  }
 });
 
+
 router.put('/:id', async (req, res) => {
-  // update a category by its `id` value
   try {
-    const updatedCategory = Category.update(req.body)
-    res.status(200).json(updatedCategory)
-    return updatedCategory
-    } catch {
-    res.status(500).json(err)
-    }
+    const category = await Category.update(
+      {
+        category_name: req.body.category_name,
+      },
+      {
+        where: {
+          id: req.params.id,
+        },
+      }
+    );
+    res.status(200).json(category);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
+
 
 router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
